@@ -1,0 +1,25 @@
+server:
+  port: 9003
+spring:
+  application:
+    name: moyu_gateway
+  servlet:
+    multipart:
+      max-file-size: 1024MB # 最大上传单个文件大小：默认1M
+      max-request-size: 1024MB # 最大置总上传的数据大小 ：默认10M
+zuul:
+  routes:
+    api-ucenter:
+      path: /ucenter/**
+      url: http://localhost:8001/ucenter/
+    api-system:
+      path: /system/**
+      url: http://localhost:8002/system/
+  sensitive-headers:
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:9002/eureka/ #指定注册中心地址
+  instance:
+    prefer-ip-address: true # eureka服务器上获取的是服务器的ip地址，否则是主机名
