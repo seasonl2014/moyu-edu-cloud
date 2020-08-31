@@ -25,5 +25,31 @@ public interface IEduTeacherService{
      */
     PageVO<EduTeacherVO> findEduTeacherList(Integer pageNum, Integer pageSize, EduTeacherVO eduTeacherVO);
 
+    /**
+     * 添加讲师
+     * @param eduTeacherVO
+     */
+    void add(EduTeacherVO eduTeacherVO);
+
+    /**
+     * 删除讲师
+     * @param id
+     */
+    void delete(Long id);
+
+    /**
+     * 编辑讲师
+     * @param id
+     * @return
+     */
+    EduTeacherVO edit(Long id);
+
+    /**
+     * 更新 讲师
+     * @param id
+     * @param eduTeacherVO
+     */
+    void update(Long id,EduTeacherVO eduTeacherVO);
+
 
 }

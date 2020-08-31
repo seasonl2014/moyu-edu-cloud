@@ -11,7 +11,7 @@ spring:
 # mysql数据库连接
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/springcloud_moyu_edu
+    url: jdbc:mysql://localhost:3306/springcloud_moyu_edu?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useSSL=false
     username: root
     password: root
     type: com.zaxxer.hikari.HikariDataSource   # Hikari是Spring Boot 2.0之后默认整合的数据库连接池，比druid更快的数据库连接池
@@ -38,10 +38,10 @@ logging:
 aliyun:
   oss:
     file:
-      endpoint: oss-cn-hangzhou.aliyuncs.com
-      accesskeyid: LTAI4FhTVQJEAXrJm9ZzVRE1
-      accesskeysecret: EsWj2EuPeHYRwdKCbVoXgBmaTv3Wzp
-      bucketname: edu-teacher-icon
+      endpoint: oss-cn-qingdao.aliyuncs.com
+      accesskeyid: LTAI4G61QNHcVSoU6rNGTPwq
+      accesskeysecret: w0zOEmMDfgEaTW4hVPkGRGJTwPdVWV
+      bucketname: xuedenedu
       host: career
 eureka:
   client:

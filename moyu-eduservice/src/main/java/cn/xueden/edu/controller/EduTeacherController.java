@@ -1,20 +1,20 @@
 package cn.xueden.edu.controller;
 
-import cn.xueden.common.bean.R;
+
 import cn.xueden.common.bean.ResponseBean;
-import cn.xueden.common.entity.edu.EduTeacher11;
-import cn.xueden.common.entity.edu.query.QueryTeacher;
+
 import cn.xueden.common.vo.PageVO;
 import cn.xueden.common.vo.edu.EduTeacherVO;
 import cn.xueden.edu.service.IEduTeacherService;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import cn.xueden.logging.annotation.ControllerEndpoint;
+import cn.xueden.logging.annotation.LogControllerEndpoint;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**讲师 前端控制器
  * @Auther:梁志杰
@@ -31,7 +31,7 @@ public class EduTeacherController {
     private IEduTeacherService eduTeacherService;
 
     /**
-     * 分页获取部门列表
+     * 分页获取讲师列表
      * @param pageNum
      * @param pageSize
      * @param eduTeacherVO
@@ -39,7 +39,7 @@ public class EduTeacherController {
      */
     @ApiOperation(value = "讲师列表",notes = "讲师列表，根据讲师名称模糊查询")
     @GetMapping("/findEduTeacherList")
-    public ResponseBean findDepartmentList(@RequestParam(value = "pageNum",defaultValue = "1")Integer pageNum,
+    public ResponseBean findEduTeacherList(@RequestParam(value = "pageNum",defaultValue = "1")Integer pageNum,
                                            @RequestParam(value = "pageSize",defaultValue = "15")Integer pageSize,
                                            EduTeacherVO eduTeacherVO){
         PageVO<EduTeacherVO> departmentsList = eduTeacherService.findEduTeacherList(pageNum,pageSize,eduTeacherVO);
@@ -47,135 +47,63 @@ public class EduTeacherController {
     }
 
     /**
-     * 1、查询所有的讲师功能
+     * 添加讲师
+     * @param eduTeacherVO
      * @return
      */
-    @GetMapping
-    public R getAllTeacherList(){
-        List<EduTeacher11> teachers = eduTeacherService.list(null);
-        return R.ok().data("items",teachers);
+    @RequiresPermissions({"teacher:add"})
+    @LogControllerEndpoint(exceptionMessage = "添加讲师失败",operation = "添加讲师")
+    @ApiOperation(value = "添加讲师")
+    @PostMapping("/add")
+    public ResponseBean add(@RequestBody @Validated EduTeacherVO eduTeacherVO){
+        eduTeacherService.add(eduTeacherVO);
+        return ResponseBean.success();
     }
 
     /**
-     * 2、逻辑删除讲师
+     * 功能描述：删除讲师
      * @param id
      * @return
      */
-    @DeleteMapping("{id}")
-    public R deleteTeacherById(@PathVariable String id) {
-        boolean flag = eduTeacherService.deleteTeacherById(id);
-        if(flag) {
-            return R.ok();
-        } else {
-            return R.error();
-        }
+    @LogControllerEndpoint(exceptionMessage = "删除讲师失败",operation = "删除讲师")
+    @ApiOperation(value = "删除讲师")
+    @RequiresPermissions({"teacher:delete"})
+    @DeleteMapping("/delete/{id}")
+    public ResponseBean delete(@PathVariable Long id){
+        eduTeacherService.delete(id);
+        return ResponseBean.success();
     }
 
     /**
-     * 3、分页查询讲师列表的方法
-     * @param page
-     * @param limit
-     * @return
-     */
-    @GetMapping("pageList/{page}/{limit}")
-    public R getPageTeacherList(@PathVariable Long page,@PathVariable Long limit){
-
-        //创建page对象，传递两个参数   (当前页数，每页记录数)
-        Page<EduTeacher11> pageTeacher = new Page<>(page,limit);
-
-        //调用方法分页查询
-        eduTeacherService.page(pageTeacher,null);
-
-        //从pageTeacher对象里面获取分页数据
-        long total = pageTeacher.getTotal();
-        List<EduTeacher11> records = pageTeacher.getRecords();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("total",total);
-        map.put("items",records);
-
-        return R.ok().data(map);
-    }
-
-    /**
-     * 4、多条件组合查询带分页
-     * (@RequestBody,主要用来接收前端传递给后端的json字符串中的数据的(请求体中的数据的))
-     * (使用@RequestBody时，必须使用@PostMapping提交，否则取不到值)
-     * @param page
-     * @param limit
-     * @param queryTeacher
-     * @return
-     */
-    @PostMapping("moreCondtionPageList/{page}/{limit}")
-    public R getMoreCondtionPageList(@PathVariable Long page, @PathVariable Long limit, @RequestBody(required = false) QueryTeacher queryTeacher){
-        Page<EduTeacher11> pageTeacher = new Page<>(page,limit);
-        //调用service的方法实现条件查询带分页
-        eduTeacherService.pageListCondition(pageTeacher,queryTeacher);
-
-        //从pageTeacher对象里面获取分页数据
-        long total = pageTeacher.getTotal();
-        List<EduTeacher11> records = pageTeacher.getRecords();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("total",total);
-        map.put("items",records);
-
-        return R.ok().data(map);
-    }
-
-    /**
-     * 5、添加讲师
-     * @param eduTeacher
-     * @return
-     */
-    @PostMapping("saveTeacher")
-    public R saveTeacher(@RequestBody EduTeacher11 eduTeacher){
-        boolean save = eduTeacherService.save(eduTeacher);
-        if (save){
-            return R.ok();
-        }else {
-            return R.error();
-        }
-    }
-
-    /**
-     * 6、根据id查询讲师
+     * 编辑 讲师
      * @param id
      * @return
      */
-    @GetMapping("getTeacherInfo/{id}")
-    public R getTeacherInfo(@PathVariable String id){
-        EduTeacher11 eduTeacher = eduTeacherService.getById(id);
-        return R.ok().data("eduTeacher",eduTeacher);
+    @ApiOperation(value = "编辑讲师")
+    @RequiresPermissions({"teacher:edit"})
+    @GetMapping("/edit/{id}")
+    public ResponseBean edit(@PathVariable Long id){
+        EduTeacherVO eduTeacherVO = eduTeacherService.edit(id);
+        return ResponseBean.success(eduTeacherVO);
     }
 
     /**
-     * 7、修改讲师
-     * @param eduTeacher
+     * 更新 讲师
+     * @param id
+     * @param eduTeacherVO
      * @return
      */
-    @PostMapping("updateTeacher")
-    public R updateTeacher(@RequestBody EduTeacher11 eduTeacher){
-        boolean b = eduTeacherService.updateById(eduTeacher);
-        if(b){
-            return R.ok();
-        }else {
-            return R.error();
-        }
+    @LogControllerEndpoint(exceptionMessage = "更新讲师失败",operation = "更新讲师")
+    @ApiOperation(value = "更新讲师")
+    @RequiresPermissions({"teacher:update"})
+    @PutMapping("/update/{id}")
+    public ResponseBean update(@PathVariable Long id,
+                               @RequestBody @Validated EduTeacherVO eduTeacherVO){
+        eduTeacherService.update(id,eduTeacherVO);
+        return ResponseBean.success();
+
     }
 
-    /**
-     * 模拟登录
-     * @return
-     */
-    @PostMapping("login")
-    public R login(){
-        return R.ok().data("token","admin");
-    }
 
-    @GetMapping("info")
-    public R info(){
-        return R.ok().data("roles","[admin]").data("name","admin").data("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
-    }
 
 }
