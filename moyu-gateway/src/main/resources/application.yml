@@ -15,6 +15,9 @@ zuul:
     api-system:
       path: /system/**
       url: http://localhost:8002/system/
+    api-edu:
+      path: /eduservice/**
+      url: http://localhost:8003/eduservice/
   sensitive-headers:
 
 eureka:
