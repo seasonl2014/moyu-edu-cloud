@@ -2,6 +2,7 @@ package cn.xueden.ucenter.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.xueden.common.bean.ActiveUser;
+import cn.xueden.common.client.SystemClient;
 import cn.xueden.common.config.jwt.JWTToken;
 import cn.xueden.common.entity.*;
 import cn.xueden.common.enums.UserTypeEnum;
@@ -15,7 +16,7 @@ import cn.xueden.common.vo.DepartmentVO;
 import cn.xueden.common.vo.MenuNodeVO;
 import cn.xueden.common.vo.UserInfoVO;
 
-import cn.xueden.ucenter.client.SystemClient;
+
 import cn.xueden.ucenter.converter.MenuConverter;
 import cn.xueden.ucenter.mapper.*;
 import cn.xueden.ucenter.service.IUserService;

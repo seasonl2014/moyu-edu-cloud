@@ -13,11 +13,11 @@
     <description>后台权限管理系统认证中心</description>
 
     <dependencies>
-        <dependency>
+<!--        <dependency>
             <groupId>cn.xueden</groupId>
             <artifactId>moyu-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>cn.xueden</groupId>
             <artifactId>moyu-logging</artifactId>
