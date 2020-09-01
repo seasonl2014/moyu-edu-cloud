@@ -130,4 +130,13 @@ public class EduTeacherServiceImpl  implements IEduTeacherService {
         eduTeacherMapper.updateByPrimaryKeySelective(teacher);
 
     }
+
+    /**
+     * 获取全部讲师信息
+     * @return
+     */
+    @Override
+    public List<EduTeacher> findAll() {
+        return eduTeacherMapper.selectAll();
+    }
 }

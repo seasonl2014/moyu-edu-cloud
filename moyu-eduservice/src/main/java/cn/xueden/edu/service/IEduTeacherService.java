@@ -1,6 +1,7 @@
 package cn.xueden.edu.service;
 
 
+import cn.xueden.common.entity.edu.EduTeacher;
 import cn.xueden.common.vo.PageVO;
 import cn.xueden.common.vo.edu.EduTeacherVO;
 
@@ -50,6 +51,12 @@ public interface IEduTeacherService{
      * @param eduTeacherVO
      */
     void update(Long id,EduTeacherVO eduTeacherVO);
+
+    /**
+     * 获取全部讲师信息
+     * @return
+     */
+    List<EduTeacher> findAll();
 
 
 }

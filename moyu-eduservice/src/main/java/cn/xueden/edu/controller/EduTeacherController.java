@@ -3,17 +3,23 @@ package cn.xueden.edu.controller;
 
 import cn.xueden.common.bean.ResponseBean;
 
+import cn.xueden.common.entity.edu.EduTeacher;
 import cn.xueden.common.vo.PageVO;
 import cn.xueden.common.vo.edu.EduTeacherVO;
 import cn.xueden.edu.service.IEduTeacherService;
 
 import cn.xueden.logging.annotation.ControllerEndpoint;
 import cn.xueden.logging.annotation.LogControllerEndpoint;
+import com.wuwenze.poi.ExcelKit;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 
 /**讲师 前端控制器
@@ -22,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
  * @Description:cn.xueden.edu.controller
  * @version:1.0
  */
+@Api(tags = "讲师管理接口")
 @RestController
 @RequestMapping("/eduservice/teacher")
 @CrossOrigin
@@ -102,6 +109,19 @@ public class EduTeacherController {
         eduTeacherService.update(id,eduTeacherVO);
         return ResponseBean.success();
 
+    }
+
+    /**
+     * 导出讲师信息
+     * @param response
+     */
+    @ApiOperation(value = "导出excel",notes = "导出所有讲师信息")
+    @LogControllerEndpoint(exceptionMessage = "导出讲师Excel文档失败",operation = "导出讲师Excel文档")
+    @RequiresPermissions({"teacher:export"})
+    @PostMapping("/excel")
+    public void export(HttpServletResponse response){
+        List<EduTeacher> teacherList = eduTeacherService.findAll();
+        ExcelKit.$Export(EduTeacher.class,response).downXlsx(teacherList,false);
     }
 
 
