@@ -18,6 +18,9 @@ zuul:
     api-edu:
       path: /eduservice/**
       url: http://localhost:8003/eduservice/
+    api-vidservice:
+      path: /vidservice/**
+      url: http://localhost:8004/vidservice/
   sensitive-headers:
 
 eureka:
