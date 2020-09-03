@@ -39,8 +39,8 @@ aliyun:
   oss:
     file:
       endpoint: oss-cn-qingdao.aliyuncs.com
-      accesskeyid: LTAI4G61QNHWTRcVSoU6rNGTPwq
-      accesskeysecret: w0zOEmMETYUDfgEaTW4hVPkGRGEEJTwPdVWV
+      accesskeyid: LTAI4G61QNKKDEHcVSoU6rNQGTPwq
+      accesskeysecret: w0zOEmWEMDfgEaTW4EOGDhVPkGRGJTwPdEVWV
       bucketname: xuedenedu
       host: career
 eureka:
