@@ -1,6 +1,8 @@
 package cn.xueden.edu.controller;
 
+import cn.xueden.common.bean.R;
 import cn.xueden.common.bean.ResponseBean;
+import cn.xueden.common.entity.edu.dto.EduCourseDto;
 import cn.xueden.common.vo.PageVO;
 import cn.xueden.common.vo.edu.EduCourseVO;
 import cn.xueden.edu.service.IEduCourseService;
@@ -92,6 +94,35 @@ public class EduCourseController {
         EduCourseVO eduCourseVO = courseService.edit(id);
         return ResponseBean.success(eduCourseVO);
     }
+
+    /**
+     * 根据课程id查询课程详细信息
+     * @param courseId
+     * @return
+     */
+    @GetMapping("getAllCourseInfo/{courseId}")
+    public EduCourseDto getAllCourseInfo(@PathVariable Long courseId){
+        EduCourseDto eduCourseDto = courseService.getAllCourseInfo(courseId);
+        return eduCourseDto;
+    }
+
+    /**
+     * 更新课程
+     *
+     * @return
+     */
+    @LogControllerEndpoint(exceptionMessage = "更新课程失败", operation = "课程资料更新")
+    @ApiOperation(value = "更新课程", notes = "更新课程信息")
+    @RequiresPermissions({"course:update"})
+    @PutMapping("/update/{id}")
+    public ResponseBean update(@PathVariable Long id, @RequestBody EduCourseVO eduCourseVO) {
+        if (eduCourseVO.getCategoryKeys().length != 2) {
+            return ResponseBean.error("课程需要2级分类");
+        }
+        courseService.update(id, eduCourseVO);
+        return ResponseBean.success();
+    }
+
 
 
 }

@@ -49,6 +49,52 @@ public class EduVideoController {
     @GetMapping("{videoId}")
     public EduVideo getVideoById(@PathVariable Long videoId){
         EduVideo eduVideo = eduVideoService.getById(videoId);
+        eduVideo.setGmtCreate(null);
+        eduVideo.setGmtModified(null);
         return eduVideo;
+    }
+
+    /**
+     * 根据文件标志获取视频信息
+     * @param fileKey
+     * @return
+     */
+    @GetMapping("getVideoByfileKey/{fileKey}")
+    public EduVideo getVideoByfileKey(@PathVariable String fileKey){
+        EduVideo eduVideo = eduVideoService.getVideoByfileKey(fileKey);
+        if(eduVideo!=null){
+            eduVideo.setGmtCreate(null);
+            eduVideo.setGmtModified(null);
+        }
+        return eduVideo;
+    }
+
+    /**
+     * 根据章节ID修改视频信息（主要更新阿里云视频源Id）
+     * @param videoId
+     *        视频源Id
+     * @param id
+     *        章节id
+     * @param duration
+     *        时长
+     * @param size
+     *        视频大小
+     * @param fileKey
+     *        文件标志
+     * @return
+     */
+    @PutMapping("updateVideoById")
+    public EduVideo updateVideoById(@RequestParam("videoId")String videoId,
+                             @RequestParam("id")Long id,
+                             @RequestParam("duration")Float duration,
+                             @RequestParam("size")Long size,
+                             @RequestParam("fileKey")String fileKey){
+        EduVideo eduVideo = new EduVideo();
+        eduVideo.setId(id);
+        eduVideo.setVideoSourceId(videoId);
+        eduVideo.setDuration(duration);
+        eduVideo.setSize(size);
+        eduVideo.setFileKey(fileKey);
+        return eduVideoService.updateById(eduVideo);
     }
 }

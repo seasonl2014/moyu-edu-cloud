@@ -32,5 +32,18 @@ public interface IEduVideoService {
      */
     EduVideo getById(Long id);
 
+    /**
+     * 根据文件标志获取视频信息
+     * @param fileKey
+     * @return
+     */
+    EduVideo getVideoByfileKey(String fileKey);
+
+    /**
+     * 根据ID视频信息
+     * @return
+     */
+    EduVideo updateById(EduVideo eduVideo);
+
 
 }

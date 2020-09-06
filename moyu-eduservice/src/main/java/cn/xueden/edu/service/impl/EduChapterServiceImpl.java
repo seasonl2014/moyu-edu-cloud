@@ -84,7 +84,7 @@ public class EduChapterServiceImpl implements IEduChapterService {
         BeanUtils.copyProperties(eduChapterVO,eduChapter);
         eduChapter.setGmtCreate(new Date());
         eduChapter.setGmtModified(new Date());
-        eduChapter.setDuration(0l);
+        eduChapter.setDuration(0f);
         eduChapterMapper.insert(eduChapter);
     }
 

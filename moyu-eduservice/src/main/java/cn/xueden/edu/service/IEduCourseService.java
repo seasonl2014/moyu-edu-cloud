@@ -1,5 +1,6 @@
 package cn.xueden.edu.service;
 
+import cn.xueden.common.entity.edu.dto.EduCourseDto;
 import cn.xueden.common.vo.PageVO;
 import cn.xueden.common.vo.edu.EduCourseVO;
 
@@ -32,5 +33,19 @@ public interface IEduCourseService {
      * @return
      */
     EduCourseVO edit(Long id);
+
+    /**
+     * 根据课程id查询课程详细信息
+     * @param courseId
+     * @return
+     */
+    EduCourseDto getAllCourseInfo(Long courseId);
+
+    /**
+     * 更新课程
+     * @param id
+     * @param eduCourseVO
+     */
+    void update(Long id, EduCourseVO eduCourseVO);
 
 }

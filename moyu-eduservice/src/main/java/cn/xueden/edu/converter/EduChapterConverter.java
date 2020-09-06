@@ -67,6 +67,13 @@ public class EduChapterConverter {
                 EduVideo eduVideo = new EduVideo();
                 eduVideo.setChapterId(eduChapterVO.getId());
                 List<EduVideo> eduVideoList = eduVideoMapper.select(eduVideo);
+
+                // 统计章节总时长
+                float totalChapterDuration=0f;
+                for (EduVideo video:eduVideoList){
+                    totalChapterDuration+=video.getDuration();
+                }
+                eduChapterVO.setDuration(totalChapterDuration);
                 eduChapterVO.setChildren(eduVideoList);
                 EduChapterTreeNodeVO eduSubjectTreeNodeVO = new EduChapterTreeNodeVO();
                 BeanUtils.copyProperties(eduChapterVO,eduSubjectTreeNodeVO);

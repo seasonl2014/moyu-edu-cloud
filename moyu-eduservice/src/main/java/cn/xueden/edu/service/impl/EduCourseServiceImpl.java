@@ -1,10 +1,13 @@
 package cn.xueden.edu.service.impl;
 
 import cn.xueden.common.entity.edu.EduCourse;
+import cn.xueden.common.entity.edu.EduSubject;
+import cn.xueden.common.entity.edu.dto.EduCourseDto;
 import cn.xueden.common.vo.PageVO;
 import cn.xueden.common.vo.edu.EduCourseVO;
 import cn.xueden.edu.converter.EduCourseConverter;
 import cn.xueden.edu.mapper.EduCourseMapper;
+import cn.xueden.edu.mapper.EduSubjectMapper;
 import cn.xueden.edu.service.IEduCourseService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -32,6 +35,9 @@ public class EduCourseServiceImpl implements IEduCourseService {
 
     @Autowired
     private EduCourseMapper eduCourseMapper;
+
+    @Autowired
+    private EduSubjectMapper eduSubjectMapper;
 
     /**
      * 分页获取课程列表
@@ -94,4 +100,51 @@ public class EduCourseServiceImpl implements IEduCourseService {
         EduCourse eduCourse = eduCourseMapper.selectByPrimaryKey(id);
         return EduCourseConverter.converterToCourseVO(eduCourse);
     }
+
+    /**
+     * 根据课程ID获取课程信息
+     * @param courseId
+     * @return
+     */
+    @Override
+    public EduCourseDto getAllCourseInfo(Long courseId) {
+        EduCourseDto eduCourseDto = new EduCourseDto();
+        EduCourse eduCourse = eduCourseMapper.selectByPrimaryKey(courseId);
+        if(eduCourse!=null){
+            eduCourseDto.setId(eduCourse.getId());
+            // 获取阿里云点播分类ID
+            EduSubject eduSubject = eduSubjectMapper.selectByPrimaryKey(eduCourse.getSubjectId());
+            if(eduSubject!=null){
+                eduCourseDto.setSubjectId(eduSubject.getCateId());
+            }else {
+                return null;
+            }
+
+            return eduCourseDto;
+        }else {
+            return null;
+        }
+
+    }
+
+    /**
+     * 更新课程
+     * @param id
+     * @param eduCourseVO
+     */
+    @Override
+    public void update(Long id, EduCourseVO eduCourseVO) {
+        EduCourse eduCourse = new EduCourse();
+        BeanUtils.copyProperties(eduCourseVO,eduCourse);
+        eduCourse.setGmtModified(new Date());
+        @NotNull(message = "分类不能为空") Long[] categoryKeys = eduCourseVO.getCategoryKeys();
+        if(categoryKeys.length==2){
+            eduCourse.setSubjectParentId(categoryKeys[0]);
+            eduCourse.setSubjectId(categoryKeys[1]);
+        }
+        eduCourseMapper.updateByPrimaryKeySelective(eduCourse);
+    }
+
+
+
 }

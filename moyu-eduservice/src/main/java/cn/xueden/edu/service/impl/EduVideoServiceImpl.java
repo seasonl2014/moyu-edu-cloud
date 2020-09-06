@@ -63,4 +63,31 @@ public class EduVideoServiceImpl implements IEduVideoService {
     public EduVideo getById(Long id) {
         return eduVideoMapper.selectByPrimaryKey(id);
     }
+
+    /**
+     * 根据文件标志获取视频小节信息
+     * @param fileKey
+     * @return
+     */
+    @Override
+    public EduVideo getVideoByfileKey(String fileKey) {
+        EduVideo eduVideo = new EduVideo();
+        eduVideo.setFileKey(fileKey);
+        return eduVideoMapper.selectOne(eduVideo);
+    }
+
+
+
+    /**
+     * 根据ID更新视频信息
+     * @param eduVideo
+     * @return
+     */
+    @Override
+    public EduVideo updateById(EduVideo eduVideo) {
+        eduVideoMapper.updateByPrimaryKeySelective(eduVideo);
+        eduVideo.setGmtCreate(null);
+        eduVideo.setGmtModified(null);
+        return eduVideo;
+    }
 }
