@@ -1,7 +1,14 @@
 package cn.xueden.vod.controller;
 
 import cn.xueden.common.bean.ResponseBean;
+import cn.xueden.common.entity.edu.EduVideo;
 import cn.xueden.vod.service.IVidService;
+import cn.xueden.vod.utils.AliyunVODSDKUtils;
+import cn.xueden.vod.utils.ConstantPropertiesUtil;
+import cn.xueden.vod.utils.RedisUtils;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthRequest;
+import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +32,17 @@ public class VidController {
     @Autowired
     private IVidService vidService;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
     /**
      * 重置上传进度
      * @param request
      */
     @RequestMapping ("/percent/reset")
     public void resetPercent(HttpServletRequest request){
-        HttpSession session = request.getSession();
-        session.setAttribute("upload_percent",0);
+        String videoId = request.getParameter("videoId");
+        redisUtils.del("upload_percent:"+videoId);
     }
 
 
@@ -43,9 +53,11 @@ public class VidController {
      */
     @GetMapping("getUploadPercent")
     public ResponseBean getUploadPercent(HttpServletRequest request){
-        HttpSession session = request.getSession();
-        System.out.println("从session获取=============："+session.getAttribute("upload_percent"));
-        int percent = session.getAttribute("upload_percent") == null ? 0: (int) session.getAttribute("upload_percent");
+        String videoId = request.getParameter("videoId");
+        System.out.println("从redis获取=========方法====："+redisUtils.get("upload_percent:"+videoId));
+        redisUtils.get("upload_percent:"+videoId);
+        int percent = redisUtils.get("upload_percent:"+videoId) == null ? 0: (int) redisUtils.get("upload_percent:"+videoId);
+        //int percent = session.getAttribute("upload_percent") == null ? 0: (int) session.getAttribute("upload_percent");
         return ResponseBean.success(percent);
     }
 
@@ -56,16 +68,59 @@ public class VidController {
      */
     @PostMapping("uploadById")
     public ResponseBean uploadAliyunVideoById(@RequestParam("file") MultipartFile file, @RequestParam("id")Long id,
-                                   HttpServletRequest request){
+                                              @RequestParam("fileKey")String fileKey,HttpServletRequest request){
         HttpSession session = request.getSession();
         //调用方法实现视频上传，返回上传之后的视频id
         try {
-            String videoId = vidService.uploadAliyunVideoById(file,id,session);
-            return ResponseBean.success(videoId);
+            // 判断视频是否已经上传过了
+            if(fileKey!=null){
+                EduVideo eduVideo = vidService.getVideoByfileKey(fileKey);
+                if(eduVideo!=null){
+                    return ResponseBean.error(201,"极速秒传完成");
+                }else{
+                    String videoId = vidService.uploadAliyunVideoById(file,id,redisUtils,fileKey);
+                    return ResponseBean.success(videoId);
+                }
+            }else {
+                String videoId = vidService.uploadAliyunVideoById(file,id,redisUtils,fileKey);
+                return ResponseBean.success(videoId);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseBean.error("上传失败");
         }
     }
+
+    /**
+     * 根据视频id获取播放凭证
+     * @param vid
+     * @return
+     */
+    @GetMapping("getPlayAuth/{vid}")
+    public ResponseBean getPlayAutoId(@PathVariable String vid){
+        try {
+            //初始化客户端、请求对象和相应对象
+            DefaultAcsClient client = AliyunVODSDKUtils.initVodClient(ConstantPropertiesUtil.ACCESS_KEY_ID, ConstantPropertiesUtil.ACCESS_KEY_SECRET);
+
+            GetVideoPlayAuthRequest request = new GetVideoPlayAuthRequest();
+            GetVideoPlayAuthResponse response = new GetVideoPlayAuthResponse();
+
+            //设置请求参数
+            request.setVideoId(vid);
+            //获取请求响应
+            response = client.getAcsResponse(request);
+
+            //输出请求结果
+            //播放凭证
+            String playAuth = response.getPlayAuth();
+            return ResponseBean.success(playAuth);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseBean.error("获取播放凭证失败");
+        }
+
+    }
+
 
 }

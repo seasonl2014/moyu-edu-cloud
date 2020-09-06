@@ -1,5 +1,6 @@
 package cn.xueden.vod.alivod;
 
+import cn.xueden.vod.utils.RedisUtils;
 import com.aliyun.oss.event.ProgressEvent;
 import com.aliyun.oss.event.ProgressEventType;
 import com.aliyun.vod.upload.impl.VoDProgressListener;
@@ -19,7 +20,7 @@ import javax.servlet.http.HttpSession;
  */
 public class PutObjectProgressListener implements VoDProgressListener {
 
-    private HttpSession session;
+    private RedisUtils redisUtils;
 
     /**
      * 已成功上传至OSS的字节数
@@ -59,11 +60,11 @@ public class PutObjectProgressListener implements VoDProgressListener {
     }
 
     /**
-     * 构造方法中加入sessio
-     * @param session
+     * 构造方法中加入redis
+     * @param redisUtils
      */
-    public PutObjectProgressListener(HttpSession session,int fileSize,Long id) {
-        this.session = session;
+    public PutObjectProgressListener(RedisUtils redisUtils, int fileSize, Long id) {
+        this.redisUtils = redisUtils;
         this.fileSize = fileSize;
         this.id = id;
     }
@@ -92,11 +93,12 @@ public class PutObjectProgressListener implements VoDProgressListener {
                 this.bytesWritten += bytes;
                 if (this.totalBytes != -1) {
                     int percent = (int) (this.bytesWritten * 100.0 / this.totalBytes);
-                    // 将进度percent放入session中
-                    session.setAttribute("upload_percent", percent);
+                    // 将进度percent放入redis中
+                    redisUtils.set("upload_percent:"+id,percent);
+                    //session.setAttribute("upload_percent", percent);
                     System.out.println(bytes + " bytes have been written at this time, upload progress3: " +
                             percent + "%(" + this.bytesWritten + "/" + this.totalBytes + ")");
-                    System.out.println("从session获取=============："+session.getAttribute("upload_percent"));
+                    System.out.println("从redis获取=============："+redisUtils.get("upload_percent:"+id));
                 } else {
                     System.out.println(bytes + " bytes have been written at this time, upload sub total4 : " +
                             "(" + this.bytesWritten + ")");

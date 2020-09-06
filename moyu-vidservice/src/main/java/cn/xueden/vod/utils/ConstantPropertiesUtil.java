@@ -19,12 +19,18 @@ public class ConstantPropertiesUtil implements InitializingBean {
     @Value("${aliyun.vod.file.keysecret}")
     private String keysecret;
 
+    @Value("${aliyun.vod.file.templategroupid}")
+    private String templategroupid;//转码组ID
+
     public static String ACCESS_KEY_ID;
     public static String ACCESS_KEY_SECRET;
+
+    public static String TEMPLATE_GROUPID;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         ACCESS_KEY_ID = keyid;
         ACCESS_KEY_SECRET = keysecret;
+        TEMPLATE_GROUPID = templategroupid;
     }
 }

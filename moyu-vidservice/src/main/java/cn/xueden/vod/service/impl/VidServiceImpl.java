@@ -6,6 +6,7 @@ import cn.xueden.common.entity.edu.EduVideo;
 import cn.xueden.vod.alivod.PutObjectProgressListener;
 import cn.xueden.vod.service.IVidService;
 import cn.xueden.vod.utils.ConstantPropertiesUtil;
+import cn.xueden.vod.utils.RedisUtils;
 import com.aliyun.vod.upload.impl.UploadVideoImpl;
 import com.aliyun.vod.upload.req.UploadStreamRequest;
 import com.aliyun.vod.upload.resp.UploadStreamResponse;
@@ -43,7 +44,7 @@ public class VidServiceImpl implements IVidService {
      * @return
      */
     @Override
-    public String uploadAliyunVideoById(MultipartFile file, Long id, HttpSession session) {
+    public String uploadAliyunVideoById(MultipartFile file, Long id, RedisUtils redisUtils,String fileKey) {
         try {
 
             //获取小节视频信息
@@ -69,8 +70,10 @@ public class VidServiceImpl implements IVidService {
             UploadStreamRequest request = new UploadStreamRequest(accessKeyId, accessKeySecret, title, fileName, inputStream);
             request.setCateId(eduCourse.getSubjectId());
             request.setPrintProgress(true);
+            //转码组
+            request.setTemplateGroupId(ConstantPropertiesUtil.TEMPLATE_GROUPID);
             /* 设置自定义上传进度回调 (必须继承 VoDProgressListener) */
-            request.setProgressListener(new PutObjectProgressListener(session,fileSize,id));
+            request.setProgressListener(new PutObjectProgressListener(redisUtils,fileSize,id));
             UploadVideoImpl uploader = new UploadVideoImpl();
             UploadStreamResponse response = uploader.uploadStream(request);
             System.out.print("RequestId=" + response.getRequestId() + "\n"); //请求视频点播服务的请求ID
@@ -87,7 +90,7 @@ public class VidServiceImpl implements IVidService {
 
             Float duration = getVideoInfo(response.getVideoId());
             //调用微服务更新视频
-            eduClient.updateVideoById(response.getVideoId(),id,duration,(long)fileSize);
+            eduClient.updateVideoById(response.getVideoId(),id,duration,(long)fileSize,fileKey);
             return response.getVideoId();
         } catch (IOException e) {
             e.printStackTrace();
@@ -116,4 +119,14 @@ public class VidServiceImpl implements IVidService {
         return null;
     }
 
+    /**
+     * 根据文件标志获取视频信息
+     * @param fileKey
+     * @return
+     */
+    @Override
+    public EduVideo getVideoByfileKey(String fileKey) {
+        //调用微服务获取视频信息
+        return eduClient.getVideoByfileKey(fileKey);
+    }
 }

@@ -1,5 +1,7 @@
 package cn.xueden.vod.service;
 
+import cn.xueden.common.entity.edu.EduVideo;
+import cn.xueden.vod.utils.RedisUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
@@ -17,6 +19,9 @@ public interface IVidService {
      * @param file
      * @return
      */
-    String uploadAliyunVideoById(MultipartFile file, Long id, HttpSession session);
+    String uploadAliyunVideoById(MultipartFile file, Long id, RedisUtils redisUtils,String fileKey);
+
+    // 根据文件标志获取视频信息
+    EduVideo getVideoByfileKey(String fileKey);
 
 }
