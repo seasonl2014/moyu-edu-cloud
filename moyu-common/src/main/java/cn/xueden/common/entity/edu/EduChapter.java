@@ -28,7 +28,7 @@ public class EduChapter {
     private String title;
 
     @ApiModelProperty(value = "章节时长")
-    private Long duration;
+    private Float duration;
 
     @ApiModelProperty(value = "显示排序")
     private Integer sort;

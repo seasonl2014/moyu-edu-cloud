@@ -23,7 +23,7 @@ public class EduChapterVO {
 
     private String title;
 
-    private Long duration;
+    private Float duration;
 
     private Integer sort;
 

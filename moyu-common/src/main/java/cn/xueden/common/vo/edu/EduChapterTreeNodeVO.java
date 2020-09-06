@@ -34,7 +34,7 @@ public class EduChapterTreeNodeVO {
 
     private int lev;
 
-    private Long duration;
+    private Float duration;
 
     private List<EduChapterTreeNodeVO> children;
 

@@ -23,7 +23,7 @@ public class EduCourseVO {
     private Long teacherId;
 
 
-    private String subjectId;
+    private Long subjectId;
 
     @NotBlank(message = "课程标题不能为空")
     private String title;
