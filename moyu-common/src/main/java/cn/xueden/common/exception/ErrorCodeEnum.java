@@ -28,8 +28,13 @@ public enum ErrorCodeEnum implements BaseCodeInterface {
     //用户相关：10000**
     USER_ACCOUNT_NOT_FOUND(10001, "账号不存在!"),
 
-    DoNotAllowToDisableTheCurrentUser(10002,"不允许禁用当前用户");
+    DoNotAllowToDisableTheCurrentUser(10002,"不允许禁用当前用户"),
 
+    COURSE_DELETE_ERROR(20001,"删除课程失败，请先删除课程大纲"),
+
+    CHAPTER_DELETE_ERROR(20002,"删除课程大章失败，请先删除该课程大章下的课时"),
+
+    VIDEO_DELETE_ERROR(20003,"删除课时失败");
 
     /** 错误码 */
     private int resultCode;

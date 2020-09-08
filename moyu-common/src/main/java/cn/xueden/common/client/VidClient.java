@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.*;
  * @Description:cn.xueden.common.client
  * @version:1.0
  */
-@FeignClient("moyu-vidservice") //找到注册中心里的online-vidservice服务
+@FeignClient("moyu-vidservice") //找到注册中心里的moyu-vidservice服务
 @Component
-public interface VidCategoryClient {
+public interface VidClient {
 
     // 添加阿里云视频分类
     @PostMapping("/vidservice/vodcategory/addVodCategory")
@@ -27,5 +27,9 @@ public interface VidCategoryClient {
     //根据id修改阿里云视频分类
     @PutMapping("/vidservice/vodcategory/updateSubjectById")
     public boolean updateSubjectById(@RequestBody EduSubjectVO eduSubjectVO);
+
+    //根据id删除阿里云视频
+    @DeleteMapping("/vidservice/vod/deleteVideoById/{videoSourceId}")
+    public boolean deleteVideoById(@PathVariable("videoSourceId") String videoSourceId);
 
 }
