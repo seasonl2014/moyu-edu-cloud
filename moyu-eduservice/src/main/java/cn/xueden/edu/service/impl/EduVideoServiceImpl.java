@@ -1,8 +1,12 @@
 package cn.xueden.edu.service.impl;
 
+import cn.xueden.common.client.VidClient;
 import cn.xueden.common.entity.edu.EduChapter;
 import cn.xueden.common.entity.edu.EduVideo;
+import cn.xueden.common.exception.ErrorCodeEnum;
+import cn.xueden.common.exception.ServiceException;
 import cn.xueden.common.vo.edu.EduVideoVO;
+import cn.xueden.edu.converter.EduVideoConverter;
 import cn.xueden.edu.mapper.EduChapterMapper;
 import cn.xueden.edu.mapper.EduVideoMapper;
 import cn.xueden.edu.service.IEduVideoService;
@@ -29,6 +33,9 @@ public class EduVideoServiceImpl implements IEduVideoService {
     @Autowired
     private EduChapterMapper eduChapterMapper;
 
+    @Autowired
+    private VidClient vidClient;
+
     /**
      * 添加课程大章
      * @param eduVideoVO
@@ -51,6 +58,56 @@ public class EduVideoServiceImpl implements IEduVideoService {
         }
         eduVideo.setVersion(1l);// 乐观锁
         eduVideoMapper.insert(eduVideo);
+    }
+
+    /**
+     * 编辑课程大章
+     * @param id
+     * @return
+     */
+    @Override
+    public EduVideoVO edit(Long id) {
+        EduVideo eduVideo = eduVideoMapper.selectByPrimaryKey(id);
+        return EduVideoConverter.converterToEduChapterVO(eduVideo);
+    }
+
+    /**
+     * 更新课时
+     * @param id
+     * @param eduVideoVO
+     */
+    @Override
+    public void update(Long id, EduVideoVO eduVideoVO) {
+        EduVideo eduVideo = new EduVideo();
+        BeanUtils.copyProperties(eduVideoVO,eduVideo);
+        eduVideo.setGmtModified(new Date());
+        eduVideoMapper.updateByPrimaryKeySelective(eduVideo);
+    }
+
+    /**
+     * 删除课时
+     * @param id
+     */
+    @Override
+    public void delete(Long id) {
+       // 获取课时信息
+        EduVideo eduVideo = eduVideoMapper.selectByPrimaryKey(id);
+        if(eduVideo==null){
+            throw new ServiceException(ErrorCodeEnum.VIDEO_DELETE_ERROR);
+        }else {
+
+            if(eduVideo.getVideoSourceId()!=null&&eduVideo.getVideoSourceId().trim().length()>0){
+                // 先删除阿里云点播视频
+                boolean flag= vidClient.deleteVideoById(eduVideo.getVideoSourceId());
+                if(flag){
+                    eduVideoMapper.deleteByPrimaryKey(id);
+                }
+            }else {
+                eduVideoMapper.deleteByPrimaryKey(id);
+            }
+
+
+        }
     }
 
 

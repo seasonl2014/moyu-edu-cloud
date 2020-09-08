@@ -42,6 +42,47 @@ public class EduVideoController {
     }
 
     /**
+     * 编辑课程课时
+     * @param id
+     * @return
+     */
+    @ApiOperation(value = "编辑课程课时", notes = "编辑课程课时信息")
+    @RequiresPermissions({"video:edit"})
+    @GetMapping("/edit/{id}")
+    public ResponseBean edit(@PathVariable Long id) {
+        EduVideoVO eduVideoVO = eduVideoService.edit(id);
+        return ResponseBean.success(eduVideoVO);
+    }
+
+    /**
+     * 更新课程大章
+     *
+     * @return
+     */
+    @LogControllerEndpoint(exceptionMessage = "更新课时失败", operation = "课时更新")
+    @ApiOperation(value = "更新课时", notes = "更新课时信息")
+    @RequiresPermissions({"video:update"})
+    @PutMapping("/update/{id}")
+    public ResponseBean update(@PathVariable Long id, @RequestBody EduVideoVO eduVideoVO) {
+        eduVideoService.update(id, eduVideoVO);
+        return ResponseBean.success();
+    }
+
+    /**
+     * 删除课时
+     * @param id
+     * @return
+     */
+    @LogControllerEndpoint(exceptionMessage = "删除课时失败", operation = "课时删除")
+    @ApiOperation(value = "删除课时", notes = "删除课时信息")
+    @RequiresPermissions({"video:delete"})
+    @DeleteMapping("/delete/{id}")
+    public ResponseBean delete(@PathVariable Long id) {
+        eduVideoService.delete(id);
+        return ResponseBean.success();
+    }
+
+    /**
      * 根据id查询
      * @param videoId
      * @return

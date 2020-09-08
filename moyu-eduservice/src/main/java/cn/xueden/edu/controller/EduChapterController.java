@@ -78,5 +78,33 @@ public class EduChapterController {
         return ResponseBean.success(eduChapterVO);
     }
 
+    /**
+     * 更新课程大章
+     *
+     * @return
+     */
+    @LogControllerEndpoint(exceptionMessage = "更新课程大章失败", operation = "课程大章资料更新")
+    @ApiOperation(value = "更新课程大章", notes = "更新课程大章信息")
+    @RequiresPermissions({"chapter:update"})
+    @PutMapping("/update/{id}")
+    public ResponseBean update(@PathVariable Long id, @RequestBody EduChapterVO eduChapterVO) {
+        chapterService.update(id, eduChapterVO);
+        return ResponseBean.success();
+    }
+
+    /**
+     * 删除课程大章
+     * @param id
+     * @return
+     */
+    @LogControllerEndpoint(exceptionMessage = "删除课程大章失败", operation = "课程大章删除")
+    @ApiOperation(value = "删除课程大章", notes = "删除课程大章信息")
+    @RequiresPermissions({"chapter:delete"})
+    @DeleteMapping("/delete/{id}")
+    public ResponseBean delete(@PathVariable Long id) {
+        chapterService.delete(id);
+        return ResponseBean.success();
+    }
+
 
 }

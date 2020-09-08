@@ -1,11 +1,15 @@
 package cn.xueden.edu.service.impl;
 
+import cn.xueden.common.entity.edu.EduChapter;
 import cn.xueden.common.entity.edu.EduCourse;
 import cn.xueden.common.entity.edu.EduSubject;
 import cn.xueden.common.entity.edu.dto.EduCourseDto;
+import cn.xueden.common.exception.ErrorCodeEnum;
+import cn.xueden.common.exception.ServiceException;
 import cn.xueden.common.vo.PageVO;
 import cn.xueden.common.vo.edu.EduCourseVO;
 import cn.xueden.edu.converter.EduCourseConverter;
+import cn.xueden.edu.mapper.EduChapterMapper;
 import cn.xueden.edu.mapper.EduCourseMapper;
 import cn.xueden.edu.mapper.EduSubjectMapper;
 import cn.xueden.edu.service.IEduCourseService;
@@ -38,6 +42,9 @@ public class EduCourseServiceImpl implements IEduCourseService {
 
     @Autowired
     private EduSubjectMapper eduSubjectMapper;
+
+    @Autowired
+    private EduChapterMapper eduChapterMapper;
 
     /**
      * 分页获取课程列表
@@ -144,6 +151,26 @@ public class EduCourseServiceImpl implements IEduCourseService {
         }
         eduCourseMapper.updateByPrimaryKeySelective(eduCourse);
     }
+
+
+    /**
+     * 删除课程
+     * @param id
+     */
+    @Override
+    public void delete(Long id) {
+        //只有课程没有课程大纲才可以删除
+        EduChapter eduChapter = new EduChapter();
+        eduChapter.setCourseId(id);
+        int totalChapter = eduChapterMapper.selectCount(eduChapter);
+
+        if(totalChapter!=0){
+            throw new ServiceException(ErrorCodeEnum.COURSE_DELETE_ERROR);
+        }else {
+            eduCourseMapper.deleteByPrimaryKey(id);
+        }
+    }
+
 
 
 

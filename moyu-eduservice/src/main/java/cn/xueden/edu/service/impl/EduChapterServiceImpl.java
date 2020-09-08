@@ -3,6 +3,8 @@ package cn.xueden.edu.service.impl;
 import cn.xueden.common.entity.edu.EduChapter;
 
 import cn.xueden.common.entity.edu.EduVideo;
+import cn.xueden.common.exception.ErrorCodeEnum;
+import cn.xueden.common.exception.ServiceException;
 import cn.xueden.common.utils.EduChapterTreeBuilder;
 import cn.xueden.common.utils.ListPageUtils;
 import cn.xueden.common.vo.PageVO;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -89,14 +92,45 @@ public class EduChapterServiceImpl implements IEduChapterService {
     }
 
     /**
-     * 编辑课程
+     * 编辑课程大章
      * @param id
      * @return
      */
     @Override
     public EduChapterVO edit(Long id) {
         EduChapter eduChapter = eduChapterMapper.selectByPrimaryKey(id);
-        //return EduCourseConverter.converterToCourseVO(eduChapter);
-        return null;
+        return EduChapterConverter.converterToEduChapterVO(eduChapter);
     }
+
+    /**
+     * 更新课程大章
+     * @param id
+     * @param eduChapterVO
+     */
+    @Override
+    public void update(Long id, EduChapterVO eduChapterVO) {
+        EduChapter eduChapter = new EduChapter();
+        BeanUtils.copyProperties(eduChapterVO,eduChapter);
+        eduChapter.setGmtModified(new Date());
+        eduChapterMapper.updateByPrimaryKeySelective(eduChapter);
+    }
+
+    /**
+     * 删除课程大章
+     * @param id
+     */
+    @Override
+    public void delete(Long id) {
+        //只有课程没有课程大纲才可以删除
+        EduVideo eduVideo = new EduVideo();
+        eduVideo.setChapterId(id);
+        int totalVideo = eduVideoMapper.selectCount(eduVideo);
+
+        if(totalVideo!=0){
+            throw new ServiceException(ErrorCodeEnum.CHAPTER_DELETE_ERROR);
+        }else {
+            eduChapterMapper.deleteByPrimaryKey(id);
+        }
+    }
+
 }

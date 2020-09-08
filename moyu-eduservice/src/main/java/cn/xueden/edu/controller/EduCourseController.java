@@ -123,6 +123,20 @@ public class EduCourseController {
         return ResponseBean.success();
     }
 
+    /**
+     * 删除课程
+     * @param id
+     * @return
+     */
+    @LogControllerEndpoint(exceptionMessage = "删除课程失败", operation = "课程资料删除")
+    @ApiOperation(value = "删除课程", notes = "删除课程信息")
+    @RequiresPermissions({"course:delete"})
+    @DeleteMapping("/delete/{id}")
+    public ResponseBean delete(@PathVariable Long id) {
+        courseService.delete(id);
+        return ResponseBean.success();
+    }
+
 
 
 }

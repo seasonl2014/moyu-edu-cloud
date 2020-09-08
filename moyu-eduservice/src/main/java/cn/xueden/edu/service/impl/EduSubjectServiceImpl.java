@@ -1,6 +1,6 @@
 package cn.xueden.edu.service.impl;
 
-import cn.xueden.common.client.VidCategoryClient;
+import cn.xueden.common.client.VidClient;
 import cn.xueden.common.entity.edu.EduSubject;
 import cn.xueden.common.entity.edu.dto.CategoryDto;
 import cn.xueden.common.utils.EduSubjectTreeBuilder;
@@ -31,7 +31,7 @@ public class EduSubjectServiceImpl implements IEduSubjectService {
     private EduSubjectMapper eduSubjectMapper;
 
     @Autowired
-    private VidCategoryClient vidCategoryClient;
+    private VidClient vidCategoryClient;
 
 
     /**

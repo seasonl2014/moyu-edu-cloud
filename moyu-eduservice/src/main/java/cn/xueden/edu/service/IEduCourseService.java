@@ -48,4 +48,10 @@ public interface IEduCourseService {
      */
     void update(Long id, EduCourseVO eduCourseVO);
 
+    /**
+     * 删除课程
+     * @param id
+     */
+    void delete(Long id);
+
 }

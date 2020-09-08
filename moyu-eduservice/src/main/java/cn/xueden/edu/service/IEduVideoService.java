@@ -2,12 +2,9 @@ package cn.xueden.edu.service;
 
 
 import cn.xueden.common.entity.edu.EduVideo;
-import cn.xueden.common.vo.PageVO;
-import cn.xueden.common.vo.edu.EduChapterTreeNodeVO;
-import cn.xueden.common.vo.edu.EduChapterVO;
 import cn.xueden.common.vo.edu.EduVideoVO;
 
-import java.util.List;
+
 
 
 /**功能描述：课程大纲小节业务接口
@@ -24,6 +21,26 @@ public interface IEduVideoService {
      * @param eduVideoVO
      */
     void add(EduVideoVO eduVideoVO);
+
+    /**
+     * 编辑课程课时
+     * @param id
+     * @return
+     */
+    EduVideoVO edit(Long id);
+
+    /**
+     * 更新课时
+     * @param id
+     * @param eduVideoVO
+     */
+    void update(Long id, EduVideoVO eduVideoVO);
+
+    /**
+     * 删除课时
+     * @param id
+     */
+    void delete(Long id);
 
     /**
      * 根据ID获取视频小节信息

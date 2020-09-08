@@ -3,6 +3,7 @@ package cn.xueden.edu.converter;
 import cn.xueden.common.entity.edu.EduSubject;
 import cn.xueden.common.vo.edu.EduSubjectTreeNodeVO;
 import cn.xueden.common.vo.edu.EduSubjectVO;
+import cn.xueden.common.vo.edu.SubjectTransferItemVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -61,5 +62,26 @@ public class EduSubjectConverter {
             }
         }
         return nodes;
+    }
+
+    /**
+     * 转成前端需要的课程栏目Item
+     * @param list
+     * @return
+     */
+    public static List<SubjectTransferItemVO> converterToSubjectTransferItem(List<EduSubjectVO> list){
+        List<SubjectTransferItemVO> itemVOList = new ArrayList<>();
+
+        if(!CollectionUtils.isEmpty(list)){
+            for(EduSubjectVO eduSubjectVO:list){
+                SubjectTransferItemVO item = new SubjectTransferItemVO();
+                item.setLabel(eduSubjectVO.getName());
+                item.setDisabled(false);
+                item.setKey(eduSubjectVO.getId());
+                itemVOList.add(item);
+            }
+        }
+
+        return itemVOList;
     }
 }

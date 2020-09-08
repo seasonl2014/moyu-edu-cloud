@@ -37,6 +37,19 @@ public interface IEduChapterService {
     EduChapterVO edit(Long id);
 
     /**
+     * 更新课程大纲
+     * @param id
+     * @param eduChapterVO
+     */
+    void update(Long id, EduChapterVO eduChapterVO);
+
+    /**
+     * 删除课程大章
+     * @param id
+     */
+    void delete(Long id);
+
+    /**
      * 章节树形
      * @return
      */
