@@ -24,4 +24,7 @@ public interface IVidService {
     // 根据文件标志获取视频信息
     EduVideo getVideoByfileKey(String fileKey);
 
+    // 删除阿里云点播视频
+    boolean deleteVideoById(String videoSourceId);
+
 }

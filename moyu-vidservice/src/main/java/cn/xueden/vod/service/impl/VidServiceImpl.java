@@ -11,6 +11,8 @@ import com.aliyun.vod.upload.impl.UploadVideoImpl;
 import com.aliyun.vod.upload.req.UploadStreamRequest;
 import com.aliyun.vod.upload.resp.UploadStreamResponse;
 import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.vod.model.v20170321.DeleteVideoRequest;
+import com.aliyuncs.vod.model.v20170321.DeleteVideoResponse;
 import com.aliyuncs.vod.model.v20170321.GetVideoInfoRequest;
 import com.aliyuncs.vod.model.v20170321.GetVideoInfoResponse;
 import net.sf.json.JSONObject;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -70,8 +73,17 @@ public class VidServiceImpl implements IVidService {
             UploadStreamRequest request = new UploadStreamRequest(accessKeyId, accessKeySecret, title, fileName, inputStream);
             request.setCateId(eduCourse.getSubjectId());
             request.setPrintProgress(true);
-            //转码组
-            request.setTemplateGroupId(ConstantPropertiesUtil.TEMPLATE_GROUPID);
+            //转码组，转码收费比较昂贵，视频免费则不需要转码
+            if(eduCourse.getPrice().compareTo(BigDecimal.ZERO)  == 0){
+                System.out.println("课程免费，不需要转码");
+            }else{
+                // 在判断单个视频是否免费
+                if(eduVideo.getIsFree()==1){
+                    request.setTemplateGroupId(ConstantPropertiesUtil.TEMPLATE_GROUPID);
+                }
+
+            }
+
             /* 设置自定义上传进度回调 (必须继承 VoDProgressListener) */
             request.setProgressListener(new PutObjectProgressListener(redisUtils,fileSize,id));
             UploadVideoImpl uploader = new UploadVideoImpl();
@@ -128,5 +140,29 @@ public class VidServiceImpl implements IVidService {
     public EduVideo getVideoByfileKey(String fileKey) {
         //调用微服务获取视频信息
         return eduClient.getVideoByfileKey(fileKey);
+    }
+
+    /**
+     * 删除阿里云视频信息
+     * @param videoSourceId
+     * @return
+     */
+    @Override
+    public boolean deleteVideoById(String videoSourceId) {
+        String accessKeyId = ConstantPropertiesUtil.ACCESS_KEY_ID;
+        String accessKeySecret = ConstantPropertiesUtil.ACCESS_KEY_SECRET;
+        try {
+        DefaultAcsClient client = initVodClient(accessKeyId, accessKeySecret);
+        DeleteVideoResponse response = new DeleteVideoResponse();
+        DeleteVideoRequest request = new DeleteVideoRequest();
+        //支持传入多个视频ID，多个用逗号分隔
+        request.setVideoIds(videoSourceId);
+        response = client.getAcsResponse(request);
+        System.out.print("RequestId = " + response.getRequestId() + "\n");
+        return true;
+        } catch (Exception e) {
+            System.out.print("ErrorMessage = " + e.getLocalizedMessage());
+            return false;
+        }
     }
 }

@@ -10,6 +10,8 @@ import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthRequest;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,7 +71,7 @@ public class VidController {
     @PostMapping("uploadById")
     public ResponseBean uploadAliyunVideoById(@RequestParam("file") MultipartFile file, @RequestParam("id")Long id,
                                               @RequestParam("fileKey")String fileKey,HttpServletRequest request){
-        HttpSession session = request.getSession();
+
         //调用方法实现视频上传，返回上传之后的视频id
         try {
             // 判断视频是否已经上传过了
@@ -120,6 +122,16 @@ public class VidController {
             return ResponseBean.error("获取播放凭证失败");
         }
 
+    }
+
+    /**
+     * 删除课时
+     * @param videoSourceId
+     * @return
+     */
+    @DeleteMapping("/deleteVideoById/{videoSourceId}")
+    public boolean deleteVideoById(@PathVariable String videoSourceId) {
+        return vidService.deleteVideoById(videoSourceId);
     }
 
 
